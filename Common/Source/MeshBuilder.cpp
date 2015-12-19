@@ -335,3 +335,122 @@ Mesh* MeshBuilder::GenerateSphere(const std::string &meshName, Color color, unsi
 
 	return mesh;
 }
+
+Mesh* MeshBuilder::GenerateCylinder(const std::string &meshName, Color color, unsigned numSlices)
+{
+	std::vector<Vertex> vertex_buffer_data;
+	std::vector<GLuint> index_buffer_data;
+	Vertex v;
+
+	float anglePerSlice = 360.f / numSlices;
+
+	for (unsigned slice = 0; slice < numSlices + 1; ++slice)
+	{
+		float theta = slice *anglePerSlice;
+		v.pos.Set(CircleX(theta), 0, CircleZ(theta));
+		v.color = color;
+		v.normal.Set(CircleX(theta), 0, CircleZ(theta));
+		vertex_buffer_data.push_back(v);
+
+		v.pos.Set(CircleX(theta), 1, CircleZ(theta));
+		v.color = color;
+		v.normal.Set(CircleX(theta), 0, CircleZ(theta));
+		vertex_buffer_data.push_back(v);
+	}
+
+	v.pos.Set(0, 0, 0);
+	v.color = color;
+	v.normal.Set(0, -1, 0);
+	vertex_buffer_data.push_back(v);
+
+	v.pos.Set(0, 1, 0);
+	v.color = color;
+	v.normal.Set(0, 1, 0);
+	vertex_buffer_data.push_back(v);
+
+	for (unsigned slice = 0; slice < numSlices + 1; ++slice)
+	{
+		index_buffer_data.push_back(2 * slice);
+		index_buffer_data.push_back(2 * slice + 1);
+	}
+
+	for (unsigned slice = 0; slice < numSlices + 1; ++slice)
+	{
+		index_buffer_data.push_back(2 * (numSlices + 1));
+		index_buffer_data.push_back(2 * slice);
+
+	}
+
+	for (unsigned slice = 0; slice < numSlices + 1; ++slice)
+	{
+		index_buffer_data.push_back(2 * slice + 1);
+		index_buffer_data.push_back(2 * (numSlices + 1) + 1);
+	}
+
+	Mesh *mesh = new Mesh(meshName);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertex_buffer_data.size() * sizeof(Vertex), &vertex_buffer_data[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data.size() * sizeof(GLuint), &index_buffer_data[0], GL_STATIC_DRAW);
+
+	mesh->indexSize = index_buffer_data.size();
+	mesh->mode = Mesh::DRAW_TRIANGLE_STRIP;
+
+	return mesh;
+}
+
+Mesh* MeshBuilder::GenerateCone(const std::string &meshName, Color color, unsigned numSlices)
+{
+	std::vector<Vertex> vertex_buffer_data;
+	std::vector<GLuint> index_buffer_data;
+	Vertex v;
+
+	float anglePerSlice = 360.f / numSlices;
+
+	for (unsigned slice = 0; slice < numSlices + 1; ++slice)
+	{
+		float theta = slice *anglePerSlice;
+		v.pos.Set(CircleX(theta), -0.5f, CircleZ(theta));
+		v.color = color;
+		v.normal.Set(CircleX(theta), 1, CircleZ(theta));
+		v.normal.Normalized();
+		vertex_buffer_data.push_back(v);
+
+		v.pos.Set(0, 0.5f, 0);
+		v.color = color;
+		v.normal.Set(CircleX(theta), 1, CircleZ(theta));
+		v.normal.Normalized();
+		vertex_buffer_data.push_back(v);
+	}
+
+	v.pos.Set(0, -0.5f, 0);
+	v.color = color;
+	v.normal.Set(0, -1, 0);
+	vertex_buffer_data.push_back(v);
+
+
+	for (unsigned slice = 0; slice < numSlices + 1; ++slice)
+	{
+		index_buffer_data.push_back(2 * (numSlices + 1));
+		index_buffer_data.push_back(2 * slice);
+	}
+
+	for (unsigned slice = 0; slice < numSlices + 1; ++slice)
+	{
+		index_buffer_data.push_back(2 * slice);
+		index_buffer_data.push_back(2 * slice + 1);
+	}
+
+	Mesh *mesh = new Mesh(meshName);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertex_buffer_data.size() * sizeof(Vertex), &vertex_buffer_data[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data.size() * sizeof(GLuint), &index_buffer_data[0], GL_STATIC_DRAW);
+
+	mesh->indexSize = index_buffer_data.size();
+	mesh->mode = Mesh::DRAW_TRIANGLE_STRIP;
+
+	return mesh;
+}

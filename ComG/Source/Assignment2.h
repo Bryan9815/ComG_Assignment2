@@ -60,11 +60,6 @@ private:
 	unsigned m_parameters[U_TOTAL];
 
 	float rotateAngle;
-	float sunRotAngle;
-	float planet1RevAngle, planet1RotAngle, moon1RotAngle;
-	float planet2RevAngle, planet2RotAngle, moon2RotAngle;
-	float planet3RevAngle, planet3RotAngle, moon3aRotAngle, moon3bRotAngle;
-	float planet4RevAngle, planet4RotAngle;
 
 	Camera2 camera;
 
