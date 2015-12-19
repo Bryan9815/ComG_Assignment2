@@ -22,6 +22,8 @@ class Assignment2 : public Scene
 		GEO_SPHERE,
 		GEO_EYE,
 		GEO_LIGHTBALL,
+		GEO_CONE,
+		GEO_CYLINDER,
 		NUM_GEOMETRY,
 	};
 	enum UNIFORM_TYPE
