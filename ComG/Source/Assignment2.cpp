@@ -75,15 +75,15 @@ void Assignment2::Init()
 
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
 	meshList[GEO_FLOOR] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1));
-	meshList[GEO_TORSO1] = MeshBuilder::GenerateCube("cube", Color(1.000f, 0.498f, 0.314f));
+	meshList[GEO_TORSO1] = MeshBuilder::GenerateCube("cube", Color(0.992f, 0.643f, 0.039f));
 	meshList[GEO_CIRCLE] = MeshBuilder::GenerateCircle("circle", Color(1, 0, 1), 20);
-	meshList[GEO_TORSO2] = MeshBuilder::GenerateCube("cube", Color(1.000f, 0.498f, 0.314f));
-	meshList[GEO_TORSO3] = MeshBuilder::GenerateCube("cube", Color(1.000f, 0.498f, 0.314f));
-	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("sphere", Color(1.000f, 0.498f, 0.314f), 18, 36);
-	meshList[GEO_EYE] = MeshBuilder::GenerateSphere("sphere", Color(0.196f, 0.804f, 0.196f), 18, 36);
+	meshList[GEO_TORSO2] = MeshBuilder::GenerateCube("cube", Color(0.992f, 0.643f, 0.039f));
+	meshList[GEO_TORSO3] = MeshBuilder::GenerateCube("cube", Color(0.992f, 0.643f, 0.039f));
+	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("sphere", Color(0.992f, 0.643f, 0.039f), 18, 36);
+	meshList[GEO_EYE] = MeshBuilder::GenerateSphere("eye", Color(0.196f, 0.804f, 0.196f), 18, 36);
 	meshList[GEO_LIGHTBALL] = MeshBuilder::GenerateSphere("lightball", Color(1, 1, 1), 18, 36);
-	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("cylinder", Color(1.000f, 0.498f, 0.314f), 36);
-	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(1.000f, 0.498f, 0.314f), 36);
+	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("cylinder", Color(0.992f, 0.643f, 0.039f), 36);
+	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(0.992f, 0.643f, 0.039f), 36);
 
 	Mtx44 projection;
 	projection.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
@@ -195,9 +195,24 @@ void Assignment2::Render()
 
 	modelStack.Scale(2, 2, 2);
 	modelStack.PushMatrix(); //Body
+	
 	modelStack.PushMatrix(); //Neck
 	modelStack.PushMatrix(); //Head
 	
+	modelStack.PushMatrix(); //Mouth1
+	modelStack.Translate(0, 4.5, 2);
+	modelStack.Scale(2, 1, 2.5);
+	modelStack.Rotate(90, 1, 0, 0);
+	RenderMesh(meshList[GEO_SPHERE], true);
+	modelStack.PopMatrix();//Mouth1
+
+	modelStack.PushMatrix(); //Mouth2
+	modelStack.Translate(0, 4.9, 2);
+	modelStack.Scale(2, 1, 2.5);
+	modelStack.Rotate(90, 1, 0, 0);
+	RenderMesh(meshList[GEO_SPHERE], true);
+	modelStack.PopMatrix();//Mouth2
+
 	modelStack.Translate(0, 5, 0.7);
 	modelStack.Scale(2, 2, 2);
 	RenderMesh(meshList[GEO_SPHERE], true);
@@ -208,6 +223,34 @@ void Assignment2::Render()
 	modelStack.Scale(1, 2, 1);
 	RenderMesh(meshList[GEO_CONE], true);
 	modelStack.PopMatrix(); //Neck
+
+	modelStack.PushMatrix(); //Right Shoulder
+	modelStack.PushMatrix(); //Right Upper Arm
+	modelStack.PushMatrix(); //Right Elbow
+	modelStack.PushMatrix(); //Right Forearm
+
+	modelStack.Translate(-3.95, 0, 1.25);
+	modelStack.Rotate(135, 1, 0, 0);
+	modelStack.Scale(0.75, 2, 0.75);
+	RenderMesh(meshList[GEO_CYLINDER], true);
+	modelStack.PopMatrix(); //Right Forearm
+
+	modelStack.Translate(-3.95, 0, 1.25);
+	modelStack.Rotate(45, 0, 1, 1);
+	modelStack.Scale(1, 0.75, 0.75);
+	RenderMesh(meshList[GEO_SPHERE], true);
+	modelStack.PopMatrix(); //Right Elbow
+
+	modelStack.Translate(-2.75, 1.25, 0);
+	modelStack.Rotate(135, 1, 0, 0);
+	modelStack.Rotate(35, 0, 0, 1);
+	modelStack.Scale(0.75, 2, 0.75);
+	RenderMesh(meshList[GEO_CYLINDER], true);
+	modelStack.PopMatrix(); //Right Upper Arm
+
+	modelStack.Translate(-2.5, 1.5, 0);
+	RenderMesh(meshList[GEO_SPHERE], true);
+	modelStack.PopMatrix(); //Right Shoulder
 
 	modelStack.Scale(2.5, 3, 2);
 	RenderMesh(meshList[GEO_SPHERE], true);
