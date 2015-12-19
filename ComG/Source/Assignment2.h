@@ -22,7 +22,8 @@ class Assignment2 : public Scene
 		GEO_SPHERE,
 		GEO_EYE,
 		GEO_LIGHTBALL,
-		GEO_CONE,
+		GEO_CONEBODY,
+		GEO_CONENAIL,
 		GEO_CYLINDER,
 		NUM_GEOMETRY,
 	};
