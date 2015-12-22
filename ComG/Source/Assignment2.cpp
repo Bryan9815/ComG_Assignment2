@@ -173,7 +173,7 @@ void Assignment2::Update(double dt)
 	}
 	if (Application::IsKeyPressed('W'))
 	{
-		walkForward += (float)(1 * dt);
+		walkForward += (float)(10 * dt);
 	}
 	if (Application::IsKeyPressed('S'))
 	{
