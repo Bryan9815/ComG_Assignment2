@@ -15,6 +15,7 @@ class Assignment2 : public Scene
 		GEO_AXES,
 		GEO_FLOOR,
 		GEO_CUBEBODY,
+		GEO_CUBEDGV,
 		GEO_CIRCLE,
 		GEO_RING1,
 		GEO_SPHERE,
@@ -23,7 +24,8 @@ class Assignment2 : public Scene
 		GEO_LIGHTBALL,
 		GEO_CONEBODY,
 		GEO_CONENAIL,
-		GEO_CYLINDER,
+		GEO_CYLINDERAGU,
+		GEO_CYLINDERDGV,
 		NUM_GEOMETRY,
 	};
 	enum UNIFORM_TYPE
