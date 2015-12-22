@@ -67,7 +67,11 @@ private:
 	unsigned m_programID;
 	unsigned m_parameters[U_TOTAL];
 
-	float rotateAngle;
+	float rotateThigh;
+	float walkForward;
+	float walkBackward;
+	float turnRight;
+	float turnLeft;
 
 	Camera2 camera;
 

@@ -68,7 +68,13 @@ void Assignment2::Init()
 	glUniform1f(m_parameters[U_LIGHT0_KQ], light[0].kQ);
 
 	//variable to rotate geometry
-	rotateAngle = 0;
+	rotateThigh = 0;
+	turnLeft = 0;
+	turnRight = 0;
+
+	//variable to translate geometry
+	walkForward = 0;
+	walkBackward = 0;
 
 	//Initialize camera settings
 	camera.Init(Vector3(40, 30, 30), Vector3(0, 0, 0), Vector3(0, 1, 0));
@@ -137,9 +143,50 @@ void Assignment2::Update(double dt)
 	{
 		light[0].position.y += (float)(LSPEED * dt);
 	}
-
-	rotateAngle += (float)(10 * dt);
-
+	bool thighForward = 0;
+	if (Application::IsKeyPressed('W'))
+	{
+		if (rotateThigh >= -30 && thighForward == false)
+		{
+			rotateThigh -= 1;
+			if (rotateThigh <= -30)
+			{
+				thighForward = true;
+			}
+			else
+			{
+				thighForward = false;
+			}
+		}
+		if (rotateThigh <= 0 && thighForward == true)
+		{
+			rotateThigh += 1;
+			if (rotateThigh >= 0)
+			{
+				thighForward = false;
+			}
+			else
+			{
+				thighForward = true;
+			}
+		}
+	}
+	if (Application::IsKeyPressed('W'))
+	{
+		walkForward += (float)(1 * dt);
+	}
+	if (Application::IsKeyPressed('S'))
+	{
+		walkBackward -= (float)(10 * dt);
+	}
+	if (Application::IsKeyPressed('D'))
+	{
+		turnRight -= 2;
+	}
+	if (Application::IsKeyPressed('A'))
+	{
+		turnLeft += 2;
+	}
 }
 
 void Assignment2::RenderMesh(Mesh *mesh, bool enableLight)
@@ -194,74 +241,80 @@ void Assignment2::Render()
 	modelStack.PopMatrix(); //Lightsource
 
 	modelStack.PushMatrix(); //Floor
-	modelStack.Translate(0, -20, 0);
-	modelStack.Scale(1000, 1000, 1000);
+	modelStack.Translate(0.f, -20.f, 0.f);
+	modelStack.Scale(1000.f, 1000.f, 1000.f);
 	RenderMesh(meshList[GEO_FLOOR], true);
 	modelStack.PopMatrix(); //Floor
 
-	modelStack.Scale(2, 2, 2);
+	modelStack.Scale(2.f, 2.f, 2.f);
 	modelStack.PushMatrix(); //Body
+	
+	modelStack.Rotate(turnRight, 0, 1, 0);
+	modelStack.Rotate(turnLeft, 0, 1, 0);
+
+	modelStack.Translate(0, 0, walkForward);
+	modelStack.Translate(0, 0, walkBackward);
 
 	modelStack.PushMatrix(); //Neck
 	modelStack.PushMatrix(); //Head
 
 	modelStack.PushMatrix(); //Right Ear
-	modelStack.Translate(-1.75, 5.5, 0);
-	modelStack.Rotate(300, 1, 0, 0);
-	modelStack.Rotate(60, 0, 0, 1);
-	modelStack.Scale(0.5, 0.55, 0.25);
+	modelStack.Translate(-1.75f, 5.5f, 0.f);
+	modelStack.Rotate(300.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(60.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.5f, 0.55f, 0.25f);
 	RenderMesh(meshList[GEO_CONEBODY], true);
 	modelStack.PopMatrix(); //Right Ear
 
 	modelStack.PushMatrix(); //Left Ear
-	modelStack.Translate(1.75, 5.5, 0);
-	modelStack.Rotate(300, 1, 0, 0);
-	modelStack.Rotate(300, 0, 0, 1);
-	modelStack.Scale(0.5, 0.55, 0.25);
+	modelStack.Translate(1.75f, 5.5f, 0.f);
+	modelStack.Rotate(300.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(300.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.5f, 0.55f, 0.25f);
 	RenderMesh(meshList[GEO_CONEBODY], true);
 	modelStack.PopMatrix(); //Left Ear
 
 	modelStack.PushMatrix(); //Right Eyelid
 	
 	modelStack.PushMatrix(); //Right Eye
-	modelStack.Translate(-1, 5.35, 1.25);
-	modelStack.Scale(1, 0.75, 0.5);
+	modelStack.Translate(-1.f, 5.35f, 1.25f);
+	modelStack.Scale(1.f, 0.75f, 0.5f);
 	RenderMesh(meshList[GEO_EYE], true);
 
 	modelStack.PushMatrix(); //Right Iris
-	modelStack.Translate(-0.05, 0.1, 0);
-	modelStack.Rotate(15, 0, 1, 0);
-	modelStack.Scale(1, 0.75, 0.75);
+	modelStack.Translate(-0.05f, 0.1f, 0.f);
+	modelStack.Rotate(15.f, 0.f, 1.f, 0.f);
+	modelStack.Scale(1.f, 0.75f, 0.75f);
 	RenderMesh(meshList[GEO_IRIS], true);
 	modelStack.PopMatrix(); //Right Iris
 	modelStack.PopMatrix(); //Right Eye
 
-	modelStack.Translate(-1.25, 6.35, 1.25);
-	modelStack.Rotate(20, 1, 0, 0);
-	modelStack.Rotate(10, 0, 1, 0);
-	modelStack.Scale(0.35, 0.25, 0.75);
+	modelStack.Translate(-1.25f, 6.35f, 1.25f);
+	modelStack.Rotate(20.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(10.f, 0.f, 1.f, 0.f);
+	modelStack.Scale(0.35f, 0.25f, 0.75f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Right Eyelid
 
 	modelStack.PushMatrix(); //Left Eyelid
 
 	modelStack.PushMatrix(); //Left Eye
-	modelStack.Translate(1, 5.35, 1.25);
-	modelStack.Scale(1, 0.75, 0.5);
+	modelStack.Translate(1.f, 5.35f, 1.25f);
+	modelStack.Scale(1.f, 0.75f, 0.5f);
 	RenderMesh(meshList[GEO_EYE], true);
 
 	modelStack.PushMatrix(); //Left Iris
-	modelStack.Translate(0.05, 0.1, 0);
-	modelStack.Rotate(345, 0, 1, 0);
-	modelStack.Scale(1, 0.75, 0.75);
+	modelStack.Translate(0.05f, 0.1f, 0.f);
+	modelStack.Rotate(345.f, 0.f, 1.f, 0.f);
+	modelStack.Scale(1.f, 0.75f, 0.75f);
 	RenderMesh(meshList[GEO_IRIS], true);
 	modelStack.PopMatrix(); //Left Iris
 	modelStack.PopMatrix(); //Left Eye
 
-	modelStack.Translate(1.25, 6.35, 1.25);
-	modelStack.Rotate(20, 1, 0, 0);
-	modelStack.Rotate(350, 0, 1, 0);
-	modelStack.Scale(0.35, 0.25, 0.75);
+	modelStack.Translate(1.25f, 6.35f, 1.25f);
+	modelStack.Rotate(20.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(350.f, 0.f, 1.f, 0.f);
+	modelStack.Scale(0.35f, 0.25f, 0.75f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Left Eyelid
 
@@ -269,49 +322,49 @@ void Assignment2::Render()
 	modelStack.PushMatrix(); //Mouth2
 
 	modelStack.PushMatrix(); //Right Nostril
-	modelStack.Translate(-0.5, 4.8, 5.65);
-	modelStack.Rotate(45, 1, 0, 0);
-	modelStack.Rotate(15, 0, 0, 1);
-	modelStack.Scale(0.5, 0.55, 0.25);
+	modelStack.Translate(-0.5f, 4.8f, 5.65f);
+	modelStack.Rotate(45.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(15.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.5f, 0.55f, 0.25f);
 	RenderMesh(meshList[GEO_CONEBODY], true);
 	modelStack.PopMatrix(); //Right Nostril
 
 	modelStack.PushMatrix(); //Left Nostril
-	modelStack.Translate(0.5, 4.8, 5.65);
-	modelStack.Rotate(45, 1, 0, 0);
-	modelStack.Rotate(345, 0, 0, 1);
-	modelStack.Scale(0.5, 0.55, 0.25);
+	modelStack.Translate(0.5f, 4.8f, 5.65f);
+	modelStack.Rotate(45.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(345.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.5f, 0.55f, 0.25f);
 	RenderMesh(meshList[GEO_CONEBODY], true);
 	modelStack.PopMatrix(); //Left Nostril
 
-	modelStack.Translate(0, 4.5, 1.6);
-	modelStack.Rotate(100, 1, 0, 0);
-	modelStack.Scale(1.05, 4, 1);
+	modelStack.Translate(0.f, 4.5f, 1.6f);
+	modelStack.Rotate(100.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(1.05f, 4.f, 1.f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Mouth2
 
-	modelStack.Translate(0, 5, 1.7);
-	modelStack.Rotate(100, 1, 0, 0);
-	modelStack.Scale(1, 4, 1);
+	modelStack.Translate(0.f, 5.f, 1.7f);
+	modelStack.Rotate(100.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(1.f, 4.f, 1.f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Mouth1
 
-	modelStack.Translate(0, 5, 0.7);
-	modelStack.Scale(2, 2, 2);
+	modelStack.Translate(0.f, 5.f, 0.7f);
+	modelStack.Scale(2.f, 2.f, 2.f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Head
 
 	modelStack.PushMatrix(); //Throat
 
-	modelStack.Translate(0, 3.5, 0.5);
-	modelStack.Rotate(80, 1, 0, 0);
-	modelStack.Scale(0.75, 3.5, 1);
+	modelStack.Translate(0.f, 3.5f, 0.5f);
+	modelStack.Rotate(80.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.75f, 3.5f, 1.f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Throat
 
-	modelStack.Translate(0, 2.655, 0.2);
-	modelStack.Rotate(192.5, 1, 0, 0);
-	modelStack.Scale(1, 2, 1.45);
+	modelStack.Translate(0.f, 2.655f, 0.2f);
+	modelStack.Rotate(192.5f, 1.f, 0.f, 0.f);
+	modelStack.Scale(1.f, 2.f, 1.45f);
 	RenderMesh(meshList[GEO_CONEBODY], true);
 	modelStack.PopMatrix(); //Neck
 
@@ -323,72 +376,72 @@ void Assignment2::Render()
 	modelStack.PushMatrix(); //Right Hand Right Finger
 
 	modelStack.PushMatrix(); //Right Hand Right Fingernail
-	modelStack.Translate(-4.515, -2.545, 3.15);
-	modelStack.Rotate(147.5, 1, 0, 0);
-	modelStack.Rotate(1.5, 0, 1, 0);
-	modelStack.Rotate(11.5, 0, 0, 1);
-	modelStack.Rotate(-1, 1, 0, 0);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(-4.515f, -2.545f, 3.15f);
+	modelStack.Rotate(147.5f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(1.5f, 0.f, 1.f, 0.f);
+	modelStack.Rotate(11.5f, 0.f, 0.f, 1.f);
+	modelStack.Rotate(-1.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Right Hand Right Fingernail
 
-	modelStack.Translate(-4.255, -1.375, 2.35);
-	modelStack.Rotate(145, 1, 0, 0);
-	modelStack.Rotate(10, 0, 0, 1);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(-4.255f, -1.375f, 2.35f);
+	modelStack.Rotate(145.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(10.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Right Hand Right Finger
 
 	modelStack.PushMatrix(); //Right Hand Middle Fingernail
-	modelStack.Translate(-3.935, -2.005, 3.7);
-	modelStack.Rotate(141, 1, 0, 0);
-	modelStack.Rotate(-1.25, 0, 0, 1);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(-3.935f, -2.005f, 3.7f);
+	modelStack.Rotate(141.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(-1.25f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Right Hand Middle Fingernail
 
 	modelStack.PushMatrix(); //Right Hand Middle Finger
-	modelStack.Translate(-3.95, -0.975, 2.75);
-	modelStack.Rotate(135, 1, 0, 0);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(-3.95f, -0.975f, 2.75f);
+	modelStack.Rotate(135.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Right Hand Middle Finger
 
 	modelStack.PushMatrix(); //Right Hand Left Finger
 
 	modelStack.PushMatrix(); //Right Hand Left Fingernail
-	modelStack.Translate(-3.655, -2.525, 3.15);
-	modelStack.Rotate(148, 1, 0, 0);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(-3.655f, -2.525f, 3.15f);
+	modelStack.Rotate(148.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Right Hand Left Fingernail
 
-	modelStack.Translate(-3.655, -1.335, 2.35);
-	modelStack.Rotate(145, 1, 0, 0);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(-3.655f, -1.335f, 2.35f);
+	modelStack.Rotate(145.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Right Hand Left Finger
 
-	modelStack.Translate(-3.95, 0, 1.25);
-	modelStack.Rotate(135, 1, 0, 0);
-	modelStack.Scale(0.75, 2, 0.75);
+	modelStack.Translate(-3.95f, 0.f, 1.25f);
+	modelStack.Rotate(135.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.75f, 2.f, 0.75f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Right Forearm
 
-	modelStack.Translate(-3.95, 0, 1.25);
-	modelStack.Rotate(45, 0, 1, 1);
-	modelStack.Scale(1, 0.75, 0.75);
+	modelStack.Translate(-3.95f, 0.f, 1.25f);
+	modelStack.Rotate(45.f, 0.f, 1.f, 1.f);
+	modelStack.Scale(1.f, 0.75f, 0.75f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Right Elbow
 
-	modelStack.Translate(-2.75, 1.25, 0);
-	modelStack.Rotate(135, 1, 0, 0);
-	modelStack.Rotate(35, 0, 0, 1);
-	modelStack.Scale(0.75, 2, 0.75);
+	modelStack.Translate(-2.75f, 1.25f, 0.f);
+	modelStack.Rotate(135.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(35.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.75, 2.f, 0.75f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Right Upper Arm
 
-	modelStack.Translate(-2.5, 1.5, 0);
+	modelStack.Translate(-2.5f, 1.5f, 0.f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Right Shoulder
 
@@ -400,71 +453,71 @@ void Assignment2::Render()
 	modelStack.PushMatrix(); //Left Hand Right Finger
 
 	modelStack.PushMatrix(); //Left Hand Right Fingernail
-	modelStack.Translate(3.655, -2.525, 3.15);
-	modelStack.Rotate(148, 1, 0, 0);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(3.655f, -2.525f, 3.15f);
+	modelStack.Rotate(148.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Left Hand Right Fingernail
 
-	modelStack.Translate(3.655, -1.335, 2.35);
-	modelStack.Rotate(145, 1, 0, 0);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(3.655f, -1.335f, 2.35f);
+	modelStack.Rotate(145.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Left Hand Right Finger
 
 	modelStack.PushMatrix(); //Left Hand Middle Fingernail
-	modelStack.Translate(3.935, -2.005, 3.7);
-	modelStack.Rotate(141, 1, 0, 0);
-	modelStack.Rotate(1.25, 0, 0, 1);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(3.935f, -2.005f, 3.7f);
+	modelStack.Rotate(141.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(1.25f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Left Hand Middle Fingernail
 
 	modelStack.PushMatrix(); //Left Hand Middle Finger
-	modelStack.Translate(3.95, -0.975, 2.75);
-	modelStack.Rotate(135, 1, 0, 0);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(3.95f, -0.975f, 2.75f);
+	modelStack.Rotate(135.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Left Hand Middle Finger
 
 	modelStack.PushMatrix(); //Left Hand Left Finger
 
 	modelStack.PushMatrix(); //Left Hand Left Fingernail
-	modelStack.Translate(4.515, -2.545, 3.15);
-	modelStack.Rotate(146.5, 1, 0, 0);
-	modelStack.Rotate(1.5, 0, 1, 0);
-	modelStack.Rotate(-11.5, 0, 0, 1);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(4.515f, -2.545f, 3.15f);
+	modelStack.Rotate(146.5f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(1.5f, 0.f, 1.f, 0.f);
+	modelStack.Rotate(348.5f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Left Hand Left Fingernail
 
-	modelStack.Translate(4.255, -1.375, 2.35);
-	modelStack.Rotate(145, 1, 0, 0);
-	modelStack.Rotate(-10, 0, 0, 1);
-	modelStack.Scale(0.375, 1, 0.375);
+	modelStack.Translate(4.255f, -1.375f, 2.35f);
+	modelStack.Rotate(145.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(350.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.375f, 1.f, 0.375f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Left Hand Left Finger
 
-	modelStack.Translate(3.95, 0, 1.25);
-	modelStack.Rotate(135, 1, 0, 0);
-	modelStack.Scale(0.75, 2, 0.75);
+	modelStack.Translate(3.95f, 0.f, 1.25f);
+	modelStack.Rotate(135.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.75f, 2.f, 0.75f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Left Forearm
 
-	modelStack.Translate(3.95, 0, 1.25);
-	modelStack.Rotate(315, 0, 1, 1);
-	modelStack.Scale(1, 0.75, 0.75);
+	modelStack.Translate(3.95f, 0.f, 1.25f);
+	modelStack.Rotate(315.f, 0.f, 1.f, 1.f);
+	modelStack.Scale(1.f, 0.75f, 0.75f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Left Elbow
 
-	modelStack.Translate(2.75, 1.25, 0);
-	modelStack.Rotate(135, 1, 0, 0);
-	modelStack.Rotate(325, 0, 0, 1);
-	modelStack.Scale(0.75, 2, 0.75);
+	modelStack.Translate(2.75f, 1.25f, 0.f);
+	modelStack.Rotate(135.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(325.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.75f, 2.f, 0.75f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Left Upper Arm
 
-	modelStack.Translate(2.5, 1.5, 0);
+	modelStack.Translate(2.5f, 1.5f, 0.f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Left Shoulder
 
@@ -475,71 +528,71 @@ void Assignment2::Render()
 
 	modelStack.PushMatrix(); //Right Foot Right Toe
 	modelStack.PushMatrix(); //Right Foot Right Toenail
-	modelStack.Translate(-2.4, -8.95, 3.9);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 3, 0.65);
+	modelStack.Translate(-2.4f, -8.95f, 3.9f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 3.f, 0.65f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Right Foot Right Toenail
 
-	modelStack.Translate(-2.4, -8.95, 2.1);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 1, 0.65);
+	modelStack.Translate(-2.4f, -8.95f, 2.1f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 1.f, 0.65f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Right Foot Right Toe
 	
 	modelStack.PushMatrix(); //Right Foot Middle Toe
 	modelStack.PushMatrix(); //Right Foot Middle Toenail
-	modelStack.Translate(-1.6, -8.95, 3.9);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 3, 0.65);
+	modelStack.Translate(-1.6f, -8.95f, 3.9f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 3.f, 0.65f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Right Foot Middle Toenail
 
-	modelStack.Translate(-1.6, -8.95, 2.1);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 1, 0.75);
+	modelStack.Translate(-1.6f, -8.95f, 2.1f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 1.f, 0.75f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Right Foot Middle Toe
 
 	modelStack.PushMatrix(); //Right Foot Left Toe
 	modelStack.PushMatrix(); //Right Foot Left Toenail
-	modelStack.Translate(-0.8, -8.95, 3.9);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 3, 0.65);
+	modelStack.Translate(-0.8f, -8.95f, 3.9f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 3.f, 0.65f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Right Foot Left Toenail
 
-	modelStack.Translate(-0.8, -8.95, 2.1);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 1, 0.65);
+	modelStack.Translate(-0.8f, -8.95f, 2.1f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 1.f, 0.65f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Right Foot Left Toe
 
 	modelStack.PushMatrix(); //Right Heel
-	modelStack.Translate(-1.6, -9, -0.25);
-	modelStack.Scale(0.5, 0.5, 1.5);
+	modelStack.Translate(-1.6f, -9.f, -0.25f);
+	modelStack.Scale(0.5f, 0.5f, 1.5f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Right Heel
 
-	modelStack.Translate(-1.6, -9, 0.2);
-	modelStack.Rotate(270, 1, 0, 0);
-	modelStack.Scale(1.5, 4, 0.75);
+	modelStack.Translate(-1.6f, -9.f, 0.2f);
+	modelStack.Rotate(270.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(1.5f, 4.f, 0.75f);
 	RenderMesh(meshList[GEO_CONEBODY], true);
 	modelStack.PopMatrix(); //Right Foot
 
-	modelStack.Translate(-1.6, -8.8, 0.5);
-	modelStack.Scale(0.9, 3, 1);
+	modelStack.Translate(-1.6f, -8.8f, 0.5f);
+	modelStack.Scale(0.9f, 3.f, 1.f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Right Shin
 
-	modelStack.Translate(-1.55, -5.7, 0.5);
+	modelStack.Translate(-1.55f, -5.7f, 0.5f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Right Knee
 
-	modelStack.Translate(-1.55, -5.5, 0.5);
-	modelStack.Rotate(335, 1, 0, 0);
-	modelStack.Rotate(350, 0, 0, 1);
-	modelStack.Scale(1, 3, 1);
+	modelStack.Translate(-1.55f, -5.5f, 0.5f);
+	modelStack.Rotate(335, 1.f, 0.f, 0.f);
+	modelStack.Rotate(350.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(1.f, 3.f, 1.f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Right Thigh
 
@@ -550,108 +603,108 @@ void Assignment2::Render()
 
 	modelStack.PushMatrix(); //Left Foot Right Toe
 	modelStack.PushMatrix(); //Left Foot Right Toenail
-	modelStack.Translate(0.8, -8.95, 3.7);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 3, 0.65);
+	modelStack.Translate(0.8f, -8.95f, 3.7f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 3.f, 0.65f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Left Foot Right Toenail
 
-	modelStack.Translate(0.8, -8.95, 1.9);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 1, 0.65);
+	modelStack.Translate(0.8f, -8.95f, 1.9f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 1.f, 0.65f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Left Foot Right Toe
 
 	modelStack.PushMatrix(); //Left Foot Middle Toe
 	modelStack.PushMatrix(); //Left Foot Middle Toenail
-	modelStack.Translate(1.6, -8.95, 3.7);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 3, 0.65);
+	modelStack.Translate(1.6f, -8.95f, 3.7f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 3.f, 0.65f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Left Foot Middle Toenail
 
-	modelStack.Translate(1.6, -8.95, 1.9);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 1, 0.75);
+	modelStack.Translate(1.6f, -8.95f, 1.9f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 1.f, 0.75f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Left Foot Middle Toe
 
 	modelStack.PushMatrix(); //Left Foot Left Toe
 	modelStack.PushMatrix(); //Left Foot Left Toenail
-	modelStack.Translate(2.4, -8.95, 3.7);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 3, 0.65);
+	modelStack.Translate(2.4f, -8.95f, 3.7f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 3.f, 0.65f);
 	RenderMesh(meshList[GEO_CONENAIL], true);
 	modelStack.PopMatrix(); //Left Foot Left Toenail
 
-	modelStack.Translate(2.4, -8.95, 1.9);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(0.65, 1, 0.65);
+	modelStack.Translate(2.4f, -8.95f, 1.9f);
+	modelStack.Rotate(90.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.65f, 1.f, 0.65f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Left Foot Left Toe
 
 	modelStack.PushMatrix(); //Left Heel
-	modelStack.Translate(1.6, -9, -0.45);
-	modelStack.Scale(0.5, 0.5, 1.5);
+	modelStack.Translate(1.6f, -9.f, -0.45f);
+	modelStack.Scale(0.5f, 0.5f, 1.5f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Left Heel
 
-	modelStack.Translate(1.6, -9, 0);
-	modelStack.Rotate(270, 1, 0, 0);
-	modelStack.Scale(1.5, 4, 0.75);
+	modelStack.Translate(1.6f, -9.f, 0.f);
+	modelStack.Rotate(270.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(1.5f, 4.f, 0.75f);
 	RenderMesh(meshList[GEO_CONEBODY], true);
 	modelStack.PopMatrix(); //Left Foot
 
-	modelStack.Translate(1.6, -8.8, 0.2);
-	modelStack.Scale(0.9, 3, 1);
+	modelStack.Translate(1.6f, -8.8f, 0.2f);
+	modelStack.Scale(0.9f, 3.f, 1.f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Left Shin
 
-	modelStack.Translate(1.6, -5.7, 0.3);
+	modelStack.Translate(1.6f, -5.7f, 0.3f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Left Knee
 
-	modelStack.Translate(1.55, -5.5, 0.2);
-	modelStack.Rotate(335, 1, 0, 0);
-	modelStack.Rotate(10, 0, 0, 1);
-	modelStack.Scale(1, 3, 1);
+	modelStack.Translate(1.55f, -5.5f, 0.2f);
+	modelStack.Rotate(335.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(10.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(1.f, 3.f, 1.f);
 	RenderMesh(meshList[GEO_CYLINDERAGU], true);
 	modelStack.PopMatrix(); //Left Thigh
 
 	modelStack.PushMatrix(); //Stomach
 	modelStack.PushMatrix(); //Tail
 
-	modelStack.Translate(0, -2, -3);
-	modelStack.Rotate(270, 1, 0, 0);
-	modelStack.Scale(1.5, 3.5, 1.5);
+	modelStack.Translate(0.f, -2.f, -3.f);
+	modelStack.Rotate(270.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(1.5f, 3.5f, 1.5f);
 	RenderMesh(meshList[GEO_CONEBODY], true);
 	modelStack.PopMatrix(); //Tail
 
-	modelStack.Translate(0, -2, 0);
-	modelStack.Scale(2.75, 2.5, 2.5);
+	modelStack.Translate(0.f, -2.f, 0.f);
+	modelStack.Scale(2.75f, 2.5f, 2.5f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Stomach
 
 	modelStack.PushMatrix(); //Right Chest
-	modelStack.Translate(-1, 0.675, 0.75);
-	modelStack.Rotate(330, 0, 1, 0);
-	modelStack.Scale(1.5, 1.25, 1);
+	modelStack.Translate(-1.f, 0.675f, 0.75f);
+	modelStack.Rotate(330.f, 0.f, 1.f, 0.f);
+	modelStack.Scale(1.5f, 1.25f, 1.f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Right Chest
 
 	modelStack.PushMatrix(); //Left Chest
-	modelStack.Translate(1, 0.675, 0.75);
-	modelStack.Rotate(30, 0, 1, 0);
-	modelStack.Scale(1.5, 1.25, 1);
+	modelStack.Translate(1.f, 0.675f, 0.75f);
+	modelStack.Rotate(30.f, 0.f, 1.f, 0.f);
+	modelStack.Scale(1.5f, 1.25f, 1.f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Left Chest
 
-	modelStack.Scale(2.5, 3, 2);
+	modelStack.Scale(2.5f, 3.f, 2.f);
 	RenderMesh(meshList[GEO_SPHEREBODY], true);
 	modelStack.PopMatrix(); //Body
 
 	modelStack.PushMatrix(); //DigiviceBodyW1
-	modelStack.Translate(0, 0, 5);
+	modelStack.Translate(0.f, 0.f, 5.f);
 
 	modelStack.PushMatrix(); //DigiviceBodyW2
 	modelStack.PushMatrix(); //DigiviceBodyW3
@@ -675,128 +728,128 @@ void Assignment2::Render()
 	modelStack.PushMatrix(); //DigiviceKeychainJointR2
 	modelStack.PushMatrix(); //DigiviceKeychainLinkMiddle
 
-	modelStack.Translate(0.2, -1.4, 0.8);
-	modelStack.Rotate(90, 0, 0, 1);
-	modelStack.Scale(0.05, 0.35, 0.05);
+	modelStack.Translate(0.2f, -1.4f, 0.8f);
+	modelStack.Rotate(90.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.05f, 0.35f, 0.05f);
 	RenderMesh(meshList[GEO_CYLINDERKC], true);
 	modelStack.PopMatrix(); //DigiviceKeychainLinkMiddle
 
-	modelStack.Translate(0.15, -1.4, 0.8);
-	modelStack.Scale(0.1, 0.05, 0.05);
+	modelStack.Translate(0.15f, -1.4f, 0.8f);
+	modelStack.Scale(0.1f, 0.05f, 0.05f);
 	RenderMesh(meshList[GEO_SPHEREKC], true);
 	modelStack.PopMatrix(); //DigiviceKeychainJointL2
 
-	modelStack.Translate(-0.15, -1.4, 0.8);
-	modelStack.Scale(0.1, 0.05, 0.05);
+	modelStack.Translate(-0.15f, -1.4f, 0.8f);
+	modelStack.Scale(0.1f, 0.05f, 0.05f);
 	RenderMesh(meshList[GEO_SPHEREKC], true);
 	modelStack.PopMatrix(); //DigiviceKeychainJointR2
 
-	modelStack.Translate(0.2, -1.4, 0.8);
-	modelStack.Scale(0.045, 0.3, 0.05);
+	modelStack.Translate(0.2f, -1.4f, 0.8f);
+	modelStack.Scale(0.045f, 0.3f, 0.05f);
 	RenderMesh(meshList[GEO_CYLINDERKC], true);
 	modelStack.PopMatrix(); //DigiviceKeychainLinkL
 
-	modelStack.Translate(-0.2, -1.4, 0.8);
-	modelStack.Scale(0.045, 0.3, 0.05);
+	modelStack.Translate(-0.2f, -1.4f, 0.8f);
+	modelStack.Scale(0.045f, 0.3f, 0.05f);
 	RenderMesh(meshList[GEO_CYLINDERKC], true);
 	modelStack.PopMatrix(); //DigiviceKeychainLinkR
 
-	modelStack.Translate(0.15, -1.1, 0.8);
-	modelStack.Scale(0.1, 0.05, 0.065);
+	modelStack.Translate(0.15f, -1.1f, 0.8f);
+	modelStack.Scale(0.1f, 0.05f, 0.065f);
 	RenderMesh(meshList[GEO_SPHEREKC], true);
 	modelStack.PopMatrix(); //DigiviceKeychainJointL1
 
-	modelStack.Translate(-0.15, -1.1, 0.8);
-	modelStack.Scale(0.1, 0.05, 0.065);
+	modelStack.Translate(-0.15f, -1.1f, 0.8f);
+	modelStack.Scale(0.1f, 0.05f, 0.065f);
 	RenderMesh(meshList[GEO_SPHEREKC], true);
 	modelStack.PopMatrix(); //DigiviceKeychainJointR1
 
-	modelStack.Translate(0, -1, 0.75);
-	modelStack.Rotate(45, 1, 0, 0);
-	modelStack.Scale(0.2, 0.3, 0.25);
+	modelStack.Translate(0.f, -1.f, 0.75f);
+	modelStack.Rotate(45.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.2f, 0.3f, 0.25f);
 	RenderMesh(meshList[GEO_CUBEBODY], true);
 	modelStack.PopMatrix(); //DigivicePopOutO
 
-	modelStack.Translate(0, -1.05, 0.65);
-	modelStack.Rotate(45, 1, 0, 0);
-	modelStack.Scale(0.25, 0.5, 0.4);
+	modelStack.Translate(0.f, -1.05f, 0.65f);
+	modelStack.Rotate(45.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.25f, 0.5f, 0.4f);
 	RenderMesh(meshList[GEO_CUBEDGV], true);
 	modelStack.PopMatrix(); //DigivicePopOutW
 
-	modelStack.Translate(0, 0.5, -0.02);
-	modelStack.Rotate(330, 1, 0, 0);
-	modelStack.Scale(0.7, 0.675, 0.1);
+	modelStack.Translate(0.f, 0.5f, -0.02f);
+	modelStack.Rotate(330.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.7f, 0.675f, 0.1f);
 	RenderMesh(meshList[GEO_CUBESG], true);
 	modelStack.PopMatrix(); //DigiviceScreenG
 
-	modelStack.Translate(0, 0.5, -0.03);
-	modelStack.Rotate(330, 1, 0, 0);
-	modelStack.Scale(0.999, 0.75, 0.1);
+	modelStack.Translate(0.f, 0.5f, -0.03f);
+	modelStack.Rotate(330.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.999f, 0.75f, 0.1f);
 	RenderMesh(meshList[GEO_CUBESB], true);
 	modelStack.PopMatrix(); //DigiviceScreenB
 
-	modelStack.Translate(0.2, -0.25, 0.275);
-	modelStack.Rotate(60, 1, 0, 0);
-	modelStack.Rotate(330, 0, 1, 0);
-	modelStack.Scale(0.05, 0.2, 0.15);
+	modelStack.Translate(0.2f, -0.25f, 0.275f);
+	modelStack.Rotate(60.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(330.f, 0.f, 1.f, 0.f);
+	modelStack.Scale(0.05f, 0.2f, 0.15f);
 	RenderMesh(meshList[GEO_CYLINDERDGV], true);
 	modelStack.PopMatrix(); //DigiviceLeftOvalButton
 
-	modelStack.Translate(0, -0.2, 0.25);
-	modelStack.Rotate(60, 1, 0, 0);
+	modelStack.Translate(0.f, -0.2f, 0.25f);
+	modelStack.Rotate(60.f, 1.f, 0.f, 0.f);
 	//modelStack.Rotate(30, 0, 0, 1);
-	modelStack.Scale(0.05, 0.2, 0.15);
+	modelStack.Scale(0.05f, 0.2f, 0.15f);
 	RenderMesh(meshList[GEO_CYLINDERDGV], true);
 	modelStack.PopMatrix(); //DigiviceMiddleOvalButton
 
-	modelStack.Translate(-0.2, -0.25, 0.275);
-	modelStack.Rotate(60, 1, 0, 0);
-	modelStack.Rotate(30, 0, 1, 0);
-	modelStack.Scale(0.05, 0.2, 0.15);
+	modelStack.Translate(-0.2f, -0.25f, 0.275f);
+	modelStack.Rotate(60.f, 1.f, 0.f, 0.f);
+	modelStack.Rotate(30.f, 0.f, 1.f, 0.f);
+	modelStack.Scale(0.05f, 0.2f, 0.15f);
 	RenderMesh(meshList[GEO_CYLINDERDGV], true);
 	modelStack.PopMatrix(); //DigiviceRightOvalButton
 
-	modelStack.Translate(0, -0.45, 0.3);
-	modelStack.Rotate(60, 1, 0, 0);
-	modelStack.Scale(0.25, 0.25, 0.25);
+	modelStack.Translate(0.f, -0.45f, 0.3f);
+	modelStack.Rotate(60.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.25f, 0.25f, 0.25f);
 	RenderMesh(meshList[GEO_CYLINDERDGV], true);
 	modelStack.PopMatrix(); //DigiviceBodyRoundButton
 
-	modelStack.Translate(0, -0.95, 0.47);
-	modelStack.Scale(0.75, 0.4, 0.55);
+	modelStack.Translate(0.f, -0.95f, 0.47f);
+	modelStack.Scale(0.75f, 0.4f, 0.55f);
 	RenderMesh(meshList[GEO_CUBEBODY], true);
 	modelStack.PopMatrix(); //DigiviceBodyO2T1
 
-	modelStack.Translate(0, -0.05, 0.05);
-	modelStack.Rotate(330, 1, 0, 0);
-	modelStack.Scale(0.75, 1.9, 0.5);
+	modelStack.Translate(0.f, -0.05f, 0.05f);
+	modelStack.Rotate(330.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.75f, 1.9f, 0.5f);
 	RenderMesh(meshList[GEO_CUBEBODY], true);
 	modelStack.PopMatrix(); //DigiviceBodyO1T1
 
-	modelStack.Translate(0, -0.98, 0.45);
-	modelStack.Scale(0.9, 0.45, 0.55);
+	modelStack.Translate(0.f, -0.98f, 0.45f);
+	modelStack.Scale(0.9f, 0.45f, 0.55f);
 	RenderMesh(meshList[GEO_CUBEBODY], true);
 	modelStack.PopMatrix(); //DigiviceBodyO2
 
-	modelStack.Translate(0, -0.01, 0.02);
-	modelStack.Rotate(330, 1, 0, 0);
-	modelStack.Scale(0.9, 1.985, 0.5);
+	modelStack.Translate(0.f, -0.01f, 0.02f);
+	modelStack.Rotate(330.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(0.9f, 1.985f, 0.5f);
 	RenderMesh(meshList[GEO_CUBEBODY], true);
 	modelStack.PopMatrix(); //DigiviceBodyO1
 
-	modelStack.Translate(0.4975, -1.2, 0.44);
-	modelStack.Rotate(90, 0, 0, 1);
-	modelStack.Scale(0.25, 0.999, 0.275);
+	modelStack.Translate(0.4975f, -1.2f, 0.44f);
+	modelStack.Rotate(90.f, 0.f, 0.f, 1.f);
+	modelStack.Scale(0.25f, 0.999f, 0.275f);
 	RenderMesh(meshList[GEO_CYLINDERDGV], true);
 	modelStack.PopMatrix(); //DigiviceBodyW3
 
-	modelStack.Translate(0, -0.995, 0.44);
-	modelStack.Scale(1, 0.5, 0.55);
+	modelStack.Translate(0.f, -0.995f, 0.44f);
+	modelStack.Scale(1.f, 0.5f, 0.55f);
 	RenderMesh(meshList[GEO_CUBEDGV], true);
 	modelStack.PopMatrix(); //DigiviceBodyW2
 
-	modelStack.Rotate(330, 1, 0, 0);
-	modelStack.Scale(1, 2, 0.5);
+	modelStack.Rotate(330.f, 1.f, 0.f, 0.f);
+	modelStack.Scale(1.f, 2.f, 0.5f);
 	RenderMesh(meshList[GEO_CUBEDGV], true);
 	modelStack.PopMatrix(); //DigiviceBodyW1
 }

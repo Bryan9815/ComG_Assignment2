@@ -24,7 +24,7 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 void Camera2::Update(double dt)
 {
 	static const float CAMERA_SPEED = 50.f;
-	if(Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed('A'))
+	if(Application::IsKeyPressed(VK_LEFT))
 	{
 		float yaw = (float)(-CAMERA_SPEED * dt);
 		Mtx44 rotation;
@@ -32,7 +32,7 @@ void Camera2::Update(double dt)
 		position = rotation * position;
 		up = rotation * up;
 	}
-	if(Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed('D'))
+	if(Application::IsKeyPressed(VK_RIGHT))
 	{
 		float yaw = (float)(CAMERA_SPEED * dt);
 		Mtx44 rotation;
@@ -40,7 +40,7 @@ void Camera2::Update(double dt)
 		position = rotation * position;
 		up = rotation * up;
 	}
-	if(Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed('W'))
+	if(Application::IsKeyPressed(VK_UP))
 	{
 		float pitch = (float)(-CAMERA_SPEED * dt);
 		Vector3 view = (target - position).Normalized();
@@ -52,7 +52,7 @@ void Camera2::Update(double dt)
 		rotation.SetToRotation(pitch, right.x, right.y, right.z);
 		position = rotation * position;
 	}
-	if(Application::IsKeyPressed(VK_DOWN) || Application::IsKeyPressed('S'))
+	if(Application::IsKeyPressed(VK_DOWN))
 	{
 		float pitch = (float)(CAMERA_SPEED * dt);
 		Vector3 view = (target - position).Normalized();
